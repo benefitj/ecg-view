@@ -57,7 +57,7 @@ export class EcgView {
   /**
    * 回复状态，判断是否需要自动恢复
    */
-  recover: boolean = false;
+  recover: boolean = true;
 
   constructor(c: HTMLCanvasElement) {
     this.canvas = c;
@@ -163,7 +163,9 @@ export class EcgView {
         // 绘制
         this.drawView(this.curPoints);
         this.clearScreen = false;
-        return;
+        if(this.queue.length < 3) {
+          return;
+        }
       }
       // 队列中有数据，取出数据，没有就返回
       if (!this.queue.length) {
@@ -202,7 +204,7 @@ export class EcgView {
     ctx.moveTo(this.x, this.y);
     // 绘制线条
     let size = Math.min(points.length, 8);
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < size; i++) {
       this.x = this.x + this.step;
       this.y = this.calculateY(points.shift() as number) + 0.5;
       ctx.lineTo(this.x, this.y);
@@ -227,6 +229,8 @@ export class EcgView {
    */
   clearView() {
     this.ctx.clearRect(0, 0, this.width(), this.height());
+    this.x = -1;
+    this.y = this.baseLine;
     this.drawBackgroundGrid();
     this.clearScreen = true;
   }
