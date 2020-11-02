@@ -17,9 +17,10 @@ ecgView.start();
 (window as any).ecgView = ecgView;
 
 
-let useMqtt = true;
+let useMqtt = false;
 // 使用mqtt或者直接绘制
 if (useMqtt) {
+    ecgView.maxCacheSize = 3;
     // Create a client instance
     var client = new pahoMqtt.Client('192.168.232.128', Number(28083), '/mqtt', "mqtt-device-ecg");
     // set callback handlers

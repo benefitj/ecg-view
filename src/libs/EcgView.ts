@@ -23,6 +23,10 @@ export class EcgView {
    */
   rcvTime: number = 0;
   /**
+   * 缓存的最多数量
+   */
+  maxCacheSize: number = 0;
+  /**
    * 当前数据包
    */
   curPoints: number[] | null;
@@ -163,7 +167,7 @@ export class EcgView {
         // 绘制
         this.drawView(this.curPoints);
         this.clearScreen = false;
-        if(this.queue.length < 3) {
+        if(!this.maxCacheSize || this.queue.length < this.maxCacheSize) {
           return;
         }
       }
