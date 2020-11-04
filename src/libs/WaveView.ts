@@ -201,7 +201,7 @@ export class ViewModel {
   /**
    * 是否清理视图
    */
-  clearView: boolean;
+  clearDirty: boolean;
   /**
    * 绘制数量
    */
@@ -246,35 +246,56 @@ export class ViewModel {
    * 空白间隔
    */
   padding: number = 16;
+  /**
+ * 线的宽度
+ */
+  lineWidth: number;
+  /**
+   * 线的填充样式
+   */
+  strokeStyle: string | CanvasGradient | CanvasPattern;
+  /**
+   * 线的端口样式
+   */
+  lineCap: CanvasLineCap;
+  /**
+   * 线段的连接样式
+   */
+  lineJoin: CanvasLineJoin;
 
   constructor(options: ViewModelOptions) {
     this.width = options.width;
     this.height = options.height;
     // 是否清理View
-    this.clearView = options.clearView ? options.clearView : true;
+    this.clearDirty = options.clearDirty !== undefined ? options.clearDirty : true;
     // 绘制数量
     this.drawCount = options.drawCount ? options.drawCount : 1;
     // 中值
     this.median = options.median;
     // 基线
-    this.baseLine = Math.floor(options.baseLine ? options.baseLine : (this.height / 2));
+    this.baseLine = Math.floor(getOrDefault(options.baseLine, this.height / 2));
     // 步长
-    this.step = options.step ? options.step : 1.0;
+    this.step = getOrDefault(options.step, 1.0);
     // 缓存数量
-    this.maxCacheSize = Math.floor(options.maxCacheSize ? options.maxCacheSize : 0);
+    this.maxCacheSize = Math.floor(getOrDefault(options.maxCacheSize, 0));
     // X的起点
-    this.startX = options.startX ? options.startX : 0;
+    this.startX = getOrDefault(options.startX, 0);
     // Y的起点
-    this.startY = options.startY ? options.startY : 0;
+    this.startY = getOrDefault(options.startY, 0);
     // 空白间隔
-    this.padding = options.padding ? options.padding : 16;
+    this.padding = getOrDefault(options.padding, 16);
     // let scale = window.devicePixelRatio;
     // 缩放比
-    this.scaleRatio = options.scaleRatio ? options.scaleRatio : 1.0;
+    this.scaleRatio = getOrDefault(options.scaleRatio, 1.0);
     // x轴
     this.x = -1;
     // y轴
     this.y = this.baseLine;
+
+    this.lineWidth = getOrDefault(options.lineWidth, 1);
+    this.strokeStyle = getOrDefault(options.strokeStyle, 'black');
+    this.lineCap = getOrDefault(options.lineCap, 'round');
+    this.lineJoin = getOrDefault(options.lineJoin, 'round');
   }
 
   /**
@@ -317,12 +338,9 @@ export class ViewModel {
    */
   drawView(ctx: CanvasRenderingContext2D, points: number[], render: boolean = true) {
     // 清理部分区域
-    ctx.clearRect(this.x, this.startY, this.padding, this.height);
-
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "black";
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
+    this.onClearDirty(ctx);
+    // 设置画笔
+    this.onSetPaint(ctx);
 
     ctx.beginPath();
     ctx.moveTo(this.x, this.y);
@@ -338,6 +356,29 @@ export class ViewModel {
     }
     if (this.x >= this.width) {
       this.x = -1;
+    }
+  }
+
+  /**
+   * 设置画笔样式
+   * 
+   * @param ctx 画布上下文
+   */
+  onSetPaint(ctx: CanvasRenderingContext2D) {
+    ctx.lineWidth = this.lineWidth;
+    ctx.strokeStyle = this.strokeStyle;
+    ctx.lineCap = this.lineCap;
+    ctx.lineJoin = this.lineJoin;
+  }
+
+  /**
+   * 清理脏区域
+   * 
+   * @param ctx 画布上下文
+   */
+  onClearDirty(ctx: CanvasRenderingContext2D) {
+    if (this.clearDirty) {
+      ctx.clearRect(this.x, this.startY, this.padding, this.height);
     }
   }
 
@@ -361,9 +402,7 @@ export class ViewModel {
    * 清理视图
    */
   clear(ctx: CanvasRenderingContext2D) {
-    if(this.clearView) {
-      ctx.clearRect(this.startX, this.startY, this.width, this.height);
-    }
+    ctx.clearRect(this.startX, this.startY, this.width, this.height);
     this.x = -1;
     this.y = this.baseLine;
   }
@@ -385,7 +424,7 @@ export interface ViewModelOptions {
   /**
    * 是否清理，默认清理
    */
-  clearView?: boolean;
+  clearDirty?: boolean;
   /**
    * 中值: (最大值 - 最小值) / 2
    */
@@ -422,6 +461,22 @@ export interface ViewModelOptions {
    * 空白间隔
    */
   padding?: number;
+  /**
+   * 线的宽度
+   */
+  lineWidth?: number;
+  /**
+   * 线的填充样式
+   */
+  strokeStyle?: string | CanvasGradient | CanvasPattern;
+  /**
+   * 线的端口样式
+   */
+  lineCap?: CanvasLineCap;
+  /**
+   * 线段的连接样式
+   */
+  lineJoin?: CanvasLineJoin;
 }
 
 /**
@@ -472,11 +527,19 @@ export const drawGrid = function (canvas: HTMLCanvasElement, gridSize: number, c
 export const setPaint = function (ctx: CanvasRenderingContext2D, i: number) {
   if (i === 0 || (i + 1) % 5 === 0) {
     ctx.strokeStyle = "#FF0000";
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.0;
   } else {
     ctx.strokeStyle = "#990000";
-    ctx.lineWidth = 0.5;
+    ctx.lineWidth = 0.2;
   }
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
 }
+
+/**
+ * 获取被检查的值，如果不为null/undefined，就返回此值，否则返回默认值
+ * 
+ * @param v 检查的值
+ * @param dv  默认值
+ */
+const getOrDefault = <T>(v: any, dv: T) => v !== null && v !== undefined ? v : dv;

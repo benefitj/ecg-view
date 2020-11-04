@@ -21,46 +21,49 @@ var waveView = new WaveView(ecgViewCanvas, {
             // 创建心电
             new ViewModel({
                 width: canvas.width, // 宽度
-                height: canvas.height, // 高度
+                height: canvas.height / 2, // 高度
                 drawCount: 8, // 绘制点数
                 median: 512, // 中值
                 step: 0.5, // 步长
                 baseLine: (canvas.height / 4), // 基线
                 maxCacheSize: 2, // 缓存数量
-                scaleRatio: 0.5, // 缩放比
+                scaleRatio: 0.6, // 缩放比
                 padding: 16, // 空白填充
                 startX: 0,
                 startY: 0,
+                strokeStyle: '#000000'
             }),
             // 创建胸呼吸
             new ViewModel({
                 width: canvas.width, // 宽度
                 height: canvas.height / 2, // 高度
-                clearView: false, // 不清理视图
+                clearDirty: true, // 清理视图
                 drawCount: 1, // 绘制点数
                 median: 512, // 中值
                 step: 0.5 * 8, // 步长
                 baseLine: canvas.height * (3 / 4.0), // 基线
                 maxCacheSize: 2, // 缓存数量
-                scaleRatio: 0.3, // 缩放比
+                scaleRatio: 0.2, // 缩放比
                 padding: 16, // 空白填充
                 startX: 0,
                 startY: canvas.height / 2,
+                strokeStyle: '#FFFF00'
             }),
             // 创建腹呼吸
             new ViewModel({
                 width: canvas.width, // 宽度
                 height: canvas.height / 2, // 高度
-                clearView: true, // 清理视图
+                clearDirty: false, // 不清理视图
                 drawCount: 1, // 绘制点数
                 median: 512, // 中值
                 step: 0.5 * 8, // 步长
                 baseLine: canvas.height * (3 / 4.0), // 基线
                 maxCacheSize: 2, // 缓存数量
-                scaleRatio: 0.3, // 缩放比
+                scaleRatio: 0.2, // 缩放比
                 padding: 16, // 空白填充
                 startX: 0,
                 startY: canvas.height / 2,
+                strokeStyle: '#00FF00'
             })
         );
 
@@ -71,31 +74,36 @@ var waveView = new WaveView(ecgViewCanvas, {
             console.log(JSON.stringify(model));
         }
 
-        view.onDrawBackground = function (ctx: CanvasRenderingContext2D) {
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = "black";
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
+        // view.onDrawBackground = function (ctx: CanvasRenderingContext2D) {
+        //     ctx.lineWidth = 3;
+        //     ctx.strokeStyle = "black";
+        //     ctx.lineCap = "round";
+        //     ctx.lineJoin = "round";
 
-            ctx.beginPath();
-            ctx.moveTo(0, this.height() / 2);
-            ctx.lineTo(this.width(), this.height() / 2);
-            ctx.stroke();
-            console.log('绘制背景');
-        }
+        //     ctx.beginPath();
+        //     ctx.moveTo(0, this.height() / 2);
+        //     ctx.lineTo(this.width(), this.height() / 2);
+        //     ctx.stroke();
+        //     console.log('绘制背景');
+        // }
+
+        // 不做任何处理
+        //view.models[1].onClearDirty = ctx => {};
+        //view.models[2].onClearDirty = ctx => {};
+
     }
 }, 40);
 // 绘制背景网格
 bgGridCanvas.width = ecgViewCanvas.width;
 bgGridCanvas.height = ecgViewCanvas.height;
-drawGrid(bgGridCanvas, 15);
+drawGrid(bgGridCanvas, 20);
 // 开始绘制
 waveView.start();
 // 挂载到window
 (window as any).ecgView = waveView;
 
 
-let useMqtt = true;
+let useMqtt = false;
 // 使用mqtt或者直接绘制
 if (useMqtt) {
     waveView.models.forEach(m => m.maxCacheSize = 2);
