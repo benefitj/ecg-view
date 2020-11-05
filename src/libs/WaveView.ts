@@ -34,10 +34,14 @@ export class WaveView {
    * 回复状态，判断是否需要自动恢复
    */
   recover: boolean = true;
+  /**
+   * 是否为暂停状态
+   */
+  drawable: boolean = false;
 
   constructor(c: HTMLCanvasElement, init?: { onInit(view: WaveView): void }, interval: number = 40) {
     this.canvas = c;
-    this.ctx = c.getContext("2d", { alpha: false }) as CanvasRenderingContext2D;
+    this.ctx = getCanvasContext(c);
     this.interval = interval;
     // 初始化
     init!.onInit(this);
@@ -58,11 +62,23 @@ export class WaveView {
   }
 
   /**
+   * 是否可绘制的
+   * 
+   * @param drawable 设置是否可绘制
+   */
+  setDrawable(drawable: boolean) {
+    this.drawable = drawable;
+  }
+
+  /**
    * 添加波形数组
    * 
    * @param points 波形数值
    */
   push(waves: number[][]) {
+    if(this.drawable) {
+      return;
+    }
     if (waves && waves.length) {
       this.rcvTime = Date.now();
       let size = Math.min(this.models.length, waves.length);
@@ -88,6 +104,21 @@ export class WaveView {
    */
   pause() {
     this.stopTimer(true);
+    // 不绘制
+    this.setDrawable(false);
+    // 清理视图
+    this.clearView();
+  }
+
+  /**
+   * 恢复
+   */
+  resume() {
+    this.startTimer(true);
+    // 绘制
+    this.setDrawable(true);
+    // 清理视图
+    this.clearView();
   }
 
   /**
@@ -149,7 +180,7 @@ export class WaveView {
       return;
     }
   }
-
+  
   /**
    * 清理视图
    */
@@ -316,7 +347,7 @@ export class ViewModel {
    * @returns 是否绘制
    */
   onDraw(ctx: CanvasRenderingContext2D, render: boolean = true): boolean {
-    for (;;) {
+    for (; ;) {
       if (this.curPoints && this.curPoints.length) {
         // 绘制
         this.drawView(ctx, this.curPoints, render);
@@ -395,7 +426,7 @@ export class ViewModel {
    * @param point 波形值
    */
   calculateY(point: number): number {
-    return Math.floor(this.baseLine + (this.median - point) * this.scaleRatio + 0.5);
+    return this.baseLine + (this.median - point) * this.scaleRatio;
   }
 
   /**
@@ -534,6 +565,38 @@ export const setPaint = function (ctx: CanvasRenderingContext2D, i: number) {
   }
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
+}
+
+/**
+ * 设置画布的缩放比，用于抗锯齿
+ * 
+ * @param canvas 画布
+ * @param width 宽度
+ * @param height 高度
+ */
+export const setCanvasPixelRatio = function (canvas: HTMLCanvasElement
+  , ratio: number = window.devicePixelRatio
+  , width: number = canvas.width
+  , height: number = canvas.height) {
+  // ratio = getOrDefault(ratio, window.devicePixelRatio);
+  // width = getOrDefault(width, canvas.width);
+  // height = getOrDefault(height, canvas.height);
+  if (ratio) {
+    getCanvasContext(canvas).scale(ratio, ratio);
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
+  }
+}
+
+/**
+ * 获取画布的上下文对象
+ * 
+ * @param canvas 画布
+ */
+export const getCanvasContext = function (canvas: HTMLCanvasElement): CanvasRenderingContext2D {
+  return canvas.getContext("2d", { alpha: false }) as CanvasRenderingContext2D;
 }
 
 /**

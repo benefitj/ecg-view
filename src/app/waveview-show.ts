@@ -1,11 +1,18 @@
-import { WaveView, ViewModel, ViewModelOptions, drawGrid } from '../libs/WaveView';
+import { WaveView, ViewModel, setCanvasPixelRatio, drawGrid } from '../libs/WaveView';
 import pahoMqtt from '../libs/paho.javascript-1.0.3/paho-mqtt';
 
 var ecgViewCanvas: HTMLCanvasElement = document.getElementById("ecg-view") as HTMLCanvasElement;
 var bgGridCanvas: HTMLCanvasElement = document.getElementById("bg-grid") as HTMLCanvasElement;
 
-ecgViewCanvas.width = 960 * window.devicePixelRatio;
-ecgViewCanvas.height = 150 * window.devicePixelRatio;
+// 设置canvas
+setCanvasPixelRatio(ecgViewCanvas, window.devicePixelRatio, 1200, 400);
+
+// 绘制背景网格
+setCanvasPixelRatio(bgGridCanvas, window.devicePixelRatio, 1200, 400);
+drawGrid(bgGridCanvas, 20);
+
+// TODO 2020-11-05  待改为多线程执行
+// new Worker();
 
 // 40毫秒执行一次
 // 心电每秒200个值      每次绘制8个值
@@ -31,7 +38,7 @@ var waveView = new WaveView(ecgViewCanvas, {
                 padding: 16, // 空白填充
                 startX: 0,
                 startY: 0,
-                strokeStyle: '#000000'
+                strokeStyle: '#FF0000'
             }),
             // 创建胸呼吸
             new ViewModel({
@@ -93,17 +100,24 @@ var waveView = new WaveView(ecgViewCanvas, {
 
     }
 }, 40);
-// 绘制背景网格
-bgGridCanvas.width = ecgViewCanvas.width;
-bgGridCanvas.height = ecgViewCanvas.height;
-drawGrid(bgGridCanvas, 20);
+
+// 监听是否在当前页，并置为已读
+document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+        waveView.pause();
+    } else {
+        //处于当前页面
+        waveView.resume();
+    }
+});
+
 // 开始绘制
 waveView.start();
 // 挂载到window
 (window as any).ecgView = waveView;
 
 
-let useMqtt = false;
+let useMqtt = true;
 // 使用mqtt或者直接绘制
 if (useMqtt) {
     waveView.models.forEach(m => m.maxCacheSize = 2);
