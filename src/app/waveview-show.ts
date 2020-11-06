@@ -1,18 +1,16 @@
 import { WaveView, ViewModel, setCanvasPixelRatio, drawGrid } from '../libs/WaveView';
 import pahoMqtt from '../libs/paho.javascript-1.0.3/paho-mqtt';
+import { random } from 'lodash';
 
 var ecgViewCanvas: HTMLCanvasElement = document.getElementById("ecg-view") as HTMLCanvasElement;
 var bgGridCanvas: HTMLCanvasElement = document.getElementById("bg-grid") as HTMLCanvasElement;
 
 // 设置canvas
-setCanvasPixelRatio(ecgViewCanvas, window.devicePixelRatio, 1200, 400);
+setCanvasPixelRatio(ecgViewCanvas, window.devicePixelRatio, 1200, 300);
 
 // 绘制背景网格
-setCanvasPixelRatio(bgGridCanvas, window.devicePixelRatio, 1200, 400);
+setCanvasPixelRatio(bgGridCanvas, window.devicePixelRatio, 1200, 300);
 drawGrid(bgGridCanvas, 20);
-
-// TODO 2020-11-05  待改为多线程执行
-// new Worker();
 
 // 40毫秒执行一次
 // 心电每秒200个值      每次绘制8个值
@@ -103,12 +101,14 @@ var waveView = new WaveView(ecgViewCanvas, {
 
 // 监听是否在当前页，并置为已读
 document.addEventListener("visibilitychange", function () {
-    if (document.hidden) {
-        waveView.pause();
-    } else {
-        //处于当前页面
-        waveView.resume();
-    }
+    // if (document.hidden) {
+    //     waveView.pause();
+    //     console.log('pause');
+    // } else {
+    //     //处于当前页面
+    //     waveView.resume();
+    //     console.log('resume');
+    // }
 });
 
 // 开始绘制
@@ -122,7 +122,7 @@ let useMqtt = true;
 if (useMqtt) {
     waveView.models.forEach(m => m.maxCacheSize = 2);
     // Create a client instance
-    var client = new pahoMqtt.Client('192.168.232.128', Number(28083), '/mqtt', "mqtt-device-ecg");
+    var client = new pahoMqtt.Client('192.168.232.128', Number(28083), '/mqtt', "mqtt-device-ecg-" + random(1, 10000, false));
     // set callback handlers
     // called when the client loses its connection
     client.onConnectionLost = function (responseObject: any) {

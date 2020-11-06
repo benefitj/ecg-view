@@ -76,7 +76,7 @@ export class WaveView {
    * @param points 波形数值
    */
   push(waves: number[][]) {
-    if(this.drawable) {
+    if (this.drawable) {
       return;
     }
     if (waves && waves.length) {
@@ -103,9 +103,10 @@ export class WaveView {
    * 暂停
    */
   pause() {
-    this.stopTimer(true);
     // 不绘制
     this.setDrawable(false);
+    this.models.forEach((model) => model.clearWaveQ());
+    this.stopTimer(true);
     // 清理视图
     this.clearView();
   }
@@ -114,11 +115,12 @@ export class WaveView {
    * 恢复
    */
   resume() {
+    // 清理视图
+    this.clearView();
+    this.models.forEach((model) => model.clearWaveQ());
     this.startTimer(true);
     // 绘制
     this.setDrawable(true);
-    // 清理视图
-    this.clearView();
   }
 
   /**
@@ -134,7 +136,7 @@ export class WaveView {
    * @param recover 是否需要恢复
    */
   protected startTimer(recover: boolean) {
-    if (this.timer == null) {
+    if (!this.timer) {
       // 40毫秒执行一次
       // 心电每秒200个值      每次绘制8个值
       // 脉搏波每秒50个值     每次绘制2个值
@@ -180,7 +182,7 @@ export class WaveView {
       return;
     }
   }
-  
+
   /**
    * 清理视图
    */
@@ -338,6 +340,10 @@ export class ViewModel {
     if (points) {
       this.waveQ.push(points);
     }
+  }
+
+  clearWaveQ() {
+    this.waveQ = [];
   }
 
   /**
