@@ -37,7 +37,7 @@ export class WaveView {
   /**
    * 是否为暂停状态
    */
-  drawable: boolean = false;
+  _drawable: boolean = false;
 
   constructor(c: HTMLCanvasElement, init?: { onInit(view: WaveView): void }, interval: number = 40) {
     this.canvas = c;
@@ -66,8 +66,12 @@ export class WaveView {
    * 
    * @param drawable 设置是否可绘制
    */
-  setDrawable(drawable: boolean) {
-    this.drawable = drawable;
+  set drawable(drawable: boolean) {
+    this._drawable = drawable;
+  }
+
+  get drawable(): boolean {
+    return this._drawable;
   }
 
   /**
@@ -104,7 +108,7 @@ export class WaveView {
    */
   pause() {
     // 不绘制
-    this.setDrawable(false);
+    this.drawable = false;
     this.models.forEach((model) => model.clearWaveQ());
     this.stopTimer(true);
     // 清理视图
@@ -120,7 +124,7 @@ export class WaveView {
     this.models.forEach((model) => model.clearWaveQ());
     this.startTimer(true);
     // 绘制
-    this.setDrawable(true);
+    this.drawable = true;
   }
 
   /**
@@ -137,10 +141,6 @@ export class WaveView {
    */
   protected startTimer(recover: boolean) {
     if (!this.timer) {
-      // 40毫秒执行一次
-      // 心电每秒200个值      每次绘制8个值
-      // 脉搏波每秒50个值     每次绘制2个值
-      // 胸腹呼吸每秒25个值   每次绘制1个值
       this.timer = setInterval(() => this.draw(), this.interval);
       this.recover = recover;
     }
