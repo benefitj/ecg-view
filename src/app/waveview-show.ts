@@ -9,8 +9,10 @@ var waveViewCanvas4: HTMLCanvasElement = document.getElementById("ecg-view4") as
 var waveViewCanvas5: HTMLCanvasElement = document.getElementById("ecg-view5") as HTMLCanvasElement;
 var waveViewCanvas6: HTMLCanvasElement = document.getElementById("ecg-view6") as HTMLCanvasElement;
 
+
+
 // 设置canvas
-let width = 700, height = 220;
+let width = window.innerWidth / 2 - 30, height = window.innerHeight / 3 - 20;
 setCanvasPixelRatio(waveViewCanvas1, window.devicePixelRatio, width, height);
 setCanvasPixelRatio(waveViewCanvas2, window.devicePixelRatio, width, height);
 setCanvasPixelRatio(waveViewCanvas3, window.devicePixelRatio, width, height);
@@ -34,6 +36,7 @@ function createWaveView(c: HTMLCanvasElement): WaveView {
         // 初始化
         onInit(view: WaveView) {
             let canvas = view.canvas;
+            let step = 0.8;
             // 添加ViewModel
             view.models.push(
                 // 创建心电
@@ -42,7 +45,7 @@ function createWaveView(c: HTMLCanvasElement): WaveView {
                     height: canvas.height / 2, // 高度
                     drawCount: 8, // 绘制点数
                     median: 512, // 中值 = (最大值 - 最小值) / 2
-                    step: 0.5, // 步长
+                    step: step, // 步长
                     baseLine: (canvas.height / 4), // 基线
                     maxCacheSize: 2, // 缓存数量
                     scaleRatio: 0.6, // 缩放比
@@ -58,10 +61,10 @@ function createWaveView(c: HTMLCanvasElement): WaveView {
                     clearDirty: true, // 清理视图
                     drawCount: 1, // 绘制点数
                     median: 512, // 中值 = (最大值 - 最小值) / 2
-                    step: 0.5 * 8, // 步长
+                    step: step * 8, // 步长
                     baseLine: canvas.height * (3 / 4.0), // 基线
                     maxCacheSize: 2, // 缓存数量
-                    scaleRatio: 0.4, // 缩放比
+                    scaleRatio: 0.5, // 缩放比
                     padding: 16, // 空白填充
                     startX: 0,
                     startY: canvas.height / 2 - 2,
@@ -74,10 +77,10 @@ function createWaveView(c: HTMLCanvasElement): WaveView {
                     clearDirty: false, // 不清理视图
                     drawCount: 1, // 绘制点数
                     median: 512, // 中值 = (最大值 - 最小值) / 2
-                    step: 0.5 * 8, // 步长
+                    step: step * 8, // 步长
                     baseLine: canvas.height * (3 / 4.0), // 基线
                     maxCacheSize: 2, // 缓存数量
-                    scaleRatio: 0.4, // 缩放比
+                    scaleRatio: 0.5, // 缩放比
                     padding: 16, // 空白填充
                     startX: 0,
                     startY: canvas.height / 2 + 2,
@@ -149,7 +152,7 @@ let useMqtt = true;
 if (useMqtt) {
     deviceWaveViewMap.forEach((view, id) => view.models.forEach(m => m.maxCacheSize = 2));
     // Create a client instance
-    var client = new pahoMqtt.Client('192.168.232.128', Number(28083), '/mqtt', "mqtt-device-ecg-" + random(1, 10000, false));
+    var client = new pahoMqtt.Client('192.168.232.130', Number(28083), '/mqtt', "mqtt-device-ecg-" + random(1, 10000, false));
     // set callback handlers
     // called when the client loses its connection
     client.onConnectionLost = function (responseObject: any) {
