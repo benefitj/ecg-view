@@ -10,15 +10,46 @@ var waveViewCanvas5: HTMLCanvasElement = document.getElementById("ecg-view5") as
 var waveViewCanvas6: HTMLCanvasElement = document.getElementById("ecg-view6") as HTMLCanvasElement;
 
 
+var waveViewCanvas7: HTMLCanvasElement = document.getElementById("ecg-view7") as HTMLCanvasElement;
+var waveViewCanvas8: HTMLCanvasElement = document.getElementById("ecg-view8") as HTMLCanvasElement;
+var waveViewCanvas9: HTMLCanvasElement = document.getElementById("ecg-view9") as HTMLCanvasElement;
+var waveViewCanvas10: HTMLCanvasElement = document.getElementById("ecg-view10") as HTMLCanvasElement;
+var waveViewCanvas11: HTMLCanvasElement = document.getElementById("ecg-view11") as HTMLCanvasElement;
+var waveViewCanvas12: HTMLCanvasElement = document.getElementById("ecg-view12") as HTMLCanvasElement;
+
+
+var waveViewCanvas13: HTMLCanvasElement = document.getElementById("ecg-view13") as HTMLCanvasElement;
+var waveViewCanvas14: HTMLCanvasElement = document.getElementById("ecg-view14") as HTMLCanvasElement;
+var waveViewCanvas15: HTMLCanvasElement = document.getElementById("ecg-view15") as HTMLCanvasElement;
+var waveViewCanvas16: HTMLCanvasElement = document.getElementById("ecg-view16") as HTMLCanvasElement;
+var waveViewCanvas17: HTMLCanvasElement = document.getElementById("ecg-view17") as HTMLCanvasElement;
+var waveViewCanvas18: HTMLCanvasElement = document.getElementById("ecg-view18") as HTMLCanvasElement;
+
+let max: Function = (x: number, y: number): number => x > y ? x : y;
 
 // 设置canvas
-let width = window.innerWidth / 2 - 30, height = window.innerHeight / 3 - 20;
+let width = max(window.innerWidth / 2 - 30, 700), height = max(window.innerHeight / 5 - 20, 240);
 setCanvasPixelRatio(waveViewCanvas1, window.devicePixelRatio, width, height);
 setCanvasPixelRatio(waveViewCanvas2, window.devicePixelRatio, width, height);
 setCanvasPixelRatio(waveViewCanvas3, window.devicePixelRatio, width, height);
 setCanvasPixelRatio(waveViewCanvas4, window.devicePixelRatio, width, height);
 setCanvasPixelRatio(waveViewCanvas5, window.devicePixelRatio, width, height);
 setCanvasPixelRatio(waveViewCanvas6, window.devicePixelRatio, width, height);
+
+setCanvasPixelRatio(waveViewCanvas7, window.devicePixelRatio, width, height);
+setCanvasPixelRatio(waveViewCanvas8, window.devicePixelRatio, width, height);
+setCanvasPixelRatio(waveViewCanvas9, window.devicePixelRatio, width, height);
+setCanvasPixelRatio(waveViewCanvas10, window.devicePixelRatio, width, height);
+setCanvasPixelRatio(waveViewCanvas11, window.devicePixelRatio, width, height);
+setCanvasPixelRatio(waveViewCanvas12, window.devicePixelRatio, width, height);
+
+setCanvasPixelRatio(waveViewCanvas13, window.devicePixelRatio, width, height);
+setCanvasPixelRatio(waveViewCanvas14, window.devicePixelRatio, width, height);
+setCanvasPixelRatio(waveViewCanvas15, window.devicePixelRatio, width, height);
+setCanvasPixelRatio(waveViewCanvas16, window.devicePixelRatio, width, height);
+setCanvasPixelRatio(waveViewCanvas17, window.devicePixelRatio, width, height);
+setCanvasPixelRatio(waveViewCanvas18, window.devicePixelRatio, width, height);
+
 
 // // 绘制背景网格
 // var bgGridCanvas: HTMLCanvasElement = document.getElementById("bg-grid") as HTMLCanvasElement;
@@ -118,12 +149,28 @@ function createWaveView(c: HTMLCanvasElement): WaveView {
  * 设备对应的波形图
  */
 const deviceWaveViewMap = new Map<string, WaveView>();
+// deviceWaveViewMap.set('11000060', createWaveView(waveViewCanvas1));
 deviceWaveViewMap.set('01000341', createWaveView(waveViewCanvas1));
 deviceWaveViewMap.set('01000342', createWaveView(waveViewCanvas2));
 deviceWaveViewMap.set('01000343', createWaveView(waveViewCanvas3));
 deviceWaveViewMap.set('01000344', createWaveView(waveViewCanvas4));
 deviceWaveViewMap.set('01000345', createWaveView(waveViewCanvas5));
 deviceWaveViewMap.set('01000346', createWaveView(waveViewCanvas6));
+
+
+deviceWaveViewMap.set('01000347', createWaveView(waveViewCanvas7));
+deviceWaveViewMap.set('01000348', createWaveView(waveViewCanvas8));
+deviceWaveViewMap.set('01000349', createWaveView(waveViewCanvas9));
+deviceWaveViewMap.set('0100034a', createWaveView(waveViewCanvas10));
+deviceWaveViewMap.set('0100034b', createWaveView(waveViewCanvas11));
+deviceWaveViewMap.set('0100034c', createWaveView(waveViewCanvas12));
+
+deviceWaveViewMap.set('0100034d', createWaveView(waveViewCanvas13));
+deviceWaveViewMap.set('0100034e', createWaveView(waveViewCanvas14));
+deviceWaveViewMap.set('0100034f', createWaveView(waveViewCanvas15));
+deviceWaveViewMap.set('01000350', createWaveView(waveViewCanvas16));
+deviceWaveViewMap.set('01000351', createWaveView(waveViewCanvas17));
+deviceWaveViewMap.set('01000352', createWaveView(waveViewCanvas18));
 
 // 监听是否在当前页，并置为已读
 document.addEventListener("visibilitychange", function () {

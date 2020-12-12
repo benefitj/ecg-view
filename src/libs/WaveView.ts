@@ -353,7 +353,7 @@ export class ViewModel {
    * @returns 是否绘制
    */
   onDraw(ctx: CanvasRenderingContext2D, render: boolean = true): boolean {
-    for (; ;) {
+    for (;;) {
       if (this.curPoints && this.curPoints.length) {
         // 绘制
         this.drawView(ctx, this.curPoints, render);
