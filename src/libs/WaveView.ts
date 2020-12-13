@@ -583,7 +583,7 @@ export const setPaint = function (ctx: CanvasRenderingContext2D, i: number) {
 export const setCanvasPixelRatio = function (canvas: HTMLCanvasElement
   , ratio: number = window.devicePixelRatio
   , width: number = canvas.width
-  , height: number = canvas.height) {
+  , height: number = canvas.height): HTMLCanvasElement {
   // ratio = getOrDefault(ratio, window.devicePixelRatio);
   // width = getOrDefault(width, canvas.width);
   // height = getOrDefault(height, canvas.height);
@@ -594,6 +594,7 @@ export const setCanvasPixelRatio = function (canvas: HTMLCanvasElement
     canvas.width = width * ratio;
     canvas.height = height * ratio;
   }
+  return canvas;
 }
 
 /**
