@@ -14,7 +14,7 @@ let width = max(window.innerWidth / 2 - 30, 700), height = max(window.innerHeigh
 const deviceWaveViewMap = new Map<string, WaveView>();
 
 let deviceCode = binary.hexToNumber('01000340');
-for (let i = 1; i <= 20; i++) {
+for (let i = 1; i <= 30; i++) {
     let waveViewCanvas: HTMLCanvasElement = setCanvasPixelRatio(document.getElementById("ecg-view" + i) as HTMLCanvasElement, window.devicePixelRatio, width, height);
     deviceWaveViewMap.set(binary.numberToHex(deviceCode + i, 32, true, false), createWaveView(waveViewCanvas));
 }
@@ -150,8 +150,9 @@ if (useMqtt) {
         }
     };
 
+
     // connect the client
-    client.connect({
+    client.connect(new Object({
         userName: 'admin',
         password: 'public',
         //   onSuccess: onConnect 
@@ -160,12 +161,14 @@ if (useMqtt) {
             // Once a connection has been made, make a subscription and send a message.
             console.log("onConnect");
             // 订阅主题
-            client.subscribe("/device/collector/+", null as any);
+            //client.subscribe("/device/collector/+", null as any);
+            deviceWaveViewMap.forEach((value, deviceId) => client.subscribe("/device/collector/" + deviceId, null as any));
+
             // message = new Paho.MQTT.Message("Hello");
             // message.destinationName = "World";
             // client.send(message);
         }
-    });
+    }));
     console.log('连接MQTT服务');
 } else {
     deviceWaveViewMap.forEach((view, id) => view.models.forEach(m => m.maxCacheSize = 0));
