@@ -5,29 +5,19 @@ import { BinaryHelper } from '../libs/binary-helper';
 
 const binary = new BinaryHelper();
 
-
-
 let max: Function = (x: number, y: number): number => x > y ? x : y;
 // 设置canvas
-let width = max(window.innerWidth / 2 - 30, 700), height = max(window.innerHeight / 5 - 20, 240);
+let width = max(window.innerWidth / 2 - 30, 700), height = max(window.innerHeight / 6 - 20, 220);
 /**
  * 设备对应的波形图
  */
 const deviceWaveViewMap = new Map<string, WaveView>();
 
 let deviceCode = binary.hexToNumber('01000340');
-for(let i = 1; i <= 18; i ++) {
-    let waveViewCanvas: HTMLCanvasElement = document.getElementById("ecg-view" + i) as HTMLCanvasElement;
-    setCanvasPixelRatio(waveViewCanvas, window.devicePixelRatio, width, height);
+for (let i = 1; i <= 20; i++) {
+    let waveViewCanvas: HTMLCanvasElement = setCanvasPixelRatio(document.getElementById("ecg-view" + i) as HTMLCanvasElement, window.devicePixelRatio, width, height);
     deviceWaveViewMap.set(binary.numberToHex(deviceCode + i, 32, true, false), createWaveView(waveViewCanvas));
 }
-
-// // 绘制背景网格
-// var bgGridCanvas: HTMLCanvasElement = document.getElementById("bg-grid") as HTMLCanvasElement;
-// setCanvasPixelRatio(bgGridCanvas, window.devicePixelRatio, 1200, 300);
-// drawGrid(bgGridCanvas, 20);
-
-
 
 // 40毫秒执行一次
 // 心电每秒200个值      每次绘制8个值
@@ -38,7 +28,7 @@ function createWaveView(c: HTMLCanvasElement): WaveView {
         // 初始化
         onInit(view: WaveView) {
             let canvas = view.canvas;
-            let step = 0.8;
+            let step = 0.6;
             // 添加ViewModel
             view.models.push(
                 // 创建心电

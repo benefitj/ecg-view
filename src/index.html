@@ -14,12 +14,11 @@
         text-align: center;
       }
       .ecg-view {
-        {% comment %} position: fixed; relative; absolute {% endcomment %}
-        position: absolute; 
+        position: relative; 
         left: 0px;
         top: 0px;
         margin: 3px;
-        background: #000000;
+        background: #111111;
         border: thin solid #aaaaaa;
       }
 
@@ -27,11 +26,7 @@
         position: fixed;
         left: 0px;
         top: 0px;
-        margin: 10px;
-        {% comment %} background: #FF000000; {% endcomment %}
-        {% comment %} background: #00000000; {% endcomment %}
-        {% comment %} background: #000000; {% endcomment %}
-        {% comment %} background: #FFFFFFFF; {% endcomment %}
+        margin: 4px;
         border: thin solid #aaaaaa;
       }
     </style>
@@ -112,6 +107,14 @@
       </span>
       <span>
         <canvas id="ecg-view18" class="ecg-view" width="800" height="200">Canvas not supported</canvas>
+      </span>
+    </div>
+    <div class="line-center">
+      <span>
+        <canvas id="ecg-view19" class="ecg-view" width="800" height="200">Canvas not supported</canvas>
+      </span>
+      <span>
+        <canvas id="ecg-view20" class="ecg-view" width="800" height="200">Canvas not supported</canvas>
       </span>
     </div>
   </body>
